@@ -1,0 +1,44 @@
+{
+  "name": "movies-explorer-api",
+  "version": "1.0.0",
+  "description": "Thesis on the Yandex Practicum web developer program",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app",
+    "dev": "nodemon app",
+    "lint": "npx eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/b-o-e-v/movies-explorer-api.git"
+  },
+  "keywords": [],
+  "author": "Boev Aleksandr",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/b-o-e-v/movies-explorer-api/issues"
+  },
+  "homepage": "https://github.com/b-o-e-v/movies-explorer-api#readme",
+  "devDependencies": {
+    "eslint": "^7.29.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "nodemon": "^2.0.9"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "celebrate": "^15.0.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-winston": "^4.1.0",
+    "helmet": "^4.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.13.0",
+    "validator": "^13.6.0",
+    "winston": "^3.3.3"
+  }
+}
