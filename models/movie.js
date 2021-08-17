@@ -73,6 +73,7 @@ const movieSchema = new mongoose.Schema({
   },
   // id фильма
   movieId: {
+    type: String,
     required: true,
   },
   // название фильма на русском языке
