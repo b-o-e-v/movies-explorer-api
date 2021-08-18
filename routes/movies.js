@@ -34,7 +34,7 @@ router.post(
         .pattern(
           /^(https?:\/\/)?([a-zA-z0-9%$&=?/.-]+)\.([a-zA-z0-9%$&=?/.-]+)([a-zA-z0-9%$&=?/.-]+)?(#)?$/,
         ),
-      movieId: Joi.string().required(),
+      movieId: Joi.string().length(24).hex(),
     }),
   }),
   createMovie,
