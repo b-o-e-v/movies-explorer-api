@@ -1,53 +1,52 @@
 const router = require('express').Router();
+const validator = require('validator');
 const { celebrate, Joi } = require('celebrate');
 const {
   getMovies,
   createMovie,
   deleteMovie,
 } = require('../controllers/movies');
+const auth = require('../middlewares/auth');
+const { IS_LINK } = require('../utils/constants');
 
-router.get('/', getMovies);
+router.use(auth);
 
-router.post(
-  '/',
-  celebrate({
-    body: Joi.object().keys({
-      country: Joi.string().required(),
-      director: Joi.string().required(),
-      duration: Joi.number().required(),
-      year: Joi.string().required(),
-      description: Joi.string().required(),
-      image: Joi.string()
-        .required()
-        .pattern(
-          /^(https?:\/\/)?([a-zA-z0-9%$&=?/.-]+)\.([a-zA-z0-9%$&=?/.-]+)([a-zA-z0-9%$&=?/.-]+)?(#)?$/,
-        ),
-      trailer: Joi.string()
-        .required()
-        .pattern(
-          /^(https?:\/\/)?([a-zA-z0-9%$&=?/.-]+)\.([a-zA-z0-9%$&=?/.-]+)([a-zA-z0-9%$&=?/.-]+)?(#)?$/,
-        ),
-      nameRU: Joi.string().required(),
-      nameEN: Joi.string().required(),
-      thumbnail: Joi.string()
-        .required()
-        .pattern(
-          /^(https?:\/\/)?([a-zA-z0-9%$&=?/.-]+)\.([a-zA-z0-9%$&=?/.-]+)([a-zA-z0-9%$&=?/.-]+)?(#)?$/,
-        ),
-      movieId: Joi.string().length(24).hex(),
+router.post('/movies', celebrate({
+  body: Joi.object().keys({
+    country: Joi.string().required(),
+    director: Joi.string().required(),
+    duration: Joi.number().required(),
+    year: Joi.string().required(),
+    description: Joi.string().required(),
+    image: Joi.string().required().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      }
+      return helpers.message(IS_LINK);
     }),
-  }),
-  createMovie,
-);
-
-router.delete(
-  '/:movieId',
-  celebrate({
-    params: Joi.object().keys({
-      movieId: Joi.string().length(24).hex(),
+    trailer: Joi.string().required().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      }
+      return helpers.message(IS_LINK);
     }),
+    thumbnail: Joi.string().required().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      }
+      return helpers.message(IS_LINK);
+    }),
+    movieId: Joi.number().integer().required(),
+    nameRU: Joi.string().required(),
+    nameEN: Joi.string().required(),
   }),
-  deleteMovie,
-);
+}), createMovie);
+
+router.get('/movies', getMovies);
+router.delete('/movies/:movieId', celebrate({
+  params: Joi.object().keys({
+    movieId: Joi.string().length(24).hex(),
+  }),
+}), deleteMovie);
 
 module.exports = router;

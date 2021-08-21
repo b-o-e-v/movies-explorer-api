@@ -1,90 +1,76 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
+const { REQUIRED, IS_LINK } = require('../utils/constants');
 
 const movieSchema = new mongoose.Schema({
-  // страна создания фильма
   country: {
     type: String,
-    required: true,
+    required: [true, REQUIRED],
   },
-  // режиссёр фильма
   director: {
     type: String,
-    required: true,
+    required: [true, REQUIRED],
   },
-  // длительность фильма
   duration: {
     type: Number,
-    required: true,
+    required: [true, REQUIRED],
   },
-  // год выпуска фильма
   year: {
-    type: String,
-    required: true,
+    type: Number,
+    required: [true, REQUIRED],
   },
-  // описание фильма
   description: {
     type: String,
-    required: true,
+    required: [true, REQUIRED],
   },
-  // ссылка на постер к фильму
   image: {
     type: String,
     required: true,
     validate: {
-      validator(url) {
-        return /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/.test(
-          url,
-        );
+      validator(v) {
+        return validator.isURL(v);
       },
-      message: (props) => `${props.value} is not a valid URL!`,
+      message: IS_LINK,
     },
   },
-  // ссылка на трейлер фильма
   trailer: {
     type: String,
     required: true,
     validate: {
-      validator(url) {
-        return /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/.test(
-          url,
-        );
+      validator(v) {
+        return validator.isURL(v);
       },
-      message: (props) => `${props.value} is not a valid URL!`,
+      message: IS_LINK,
     },
   },
-  // миниатюрное изображение постера к фильму
   thumbnail: {
     type: String,
     required: true,
     validate: {
-      validator(url) {
-        return /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/.test(
-          url,
-        );
+      validator(v) {
+        return validator.isURL(v);
       },
-      message: (props) => `${props.value} is not a valid URL!`,
+      message: IS_LINK,
     },
   },
-  // _id пользователя, который сохранил фильм
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
-    required: true,
+    required: [true, REQUIRED],
   },
-  // id фильма
   movieId: {
-    type: String,
-    required: true,
+    type: Number,
+    ref: 'movie',
+    required: [true, REQUIRED],
+    unique: true,
   },
-  // название фильма на русском языке
   nameRU: {
     type: String,
-    required: true,
+    required: [true, REQUIRED],
   },
-  // название фильма на английском языке
   nameEN: {
     type: String,
-    required: true,
+    required: [true, REQUIRED],
   },
 });
 

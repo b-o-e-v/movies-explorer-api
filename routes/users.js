@@ -3,19 +3,32 @@ const { celebrate, Joi } = require('celebrate');
 const {
   getUser,
   updateProfile,
+  login,
+  createUser,
 } = require('../controllers/users');
+const auth = require('../middlewares/auth');
 
-router.get('/me', getUser);
-
-router.patch(
-  '/me',
-  celebrate({
-    body: Joi.object().keys({
-      name: Joi.string().required().min(2).max(30),
-      email: Joi.string().email().required(),
-    }),
+router.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required(),
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
   }),
-  updateProfile,
-);
+}), createUser);
+router.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }),
+}), login);
+
+router.use(auth);
+router.get('/users/me', getUser);
+router.patch('/users/me', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required(),
+    email: Joi.string().required().email().required(),
+  }),
+}), updateProfile);
 
 module.exports = router;

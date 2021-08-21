@@ -1,8 +1,13 @@
 const Movie = require('../models/movie');
 
 const RequestError = require('../errors/request-error');
-const NotFoundError = require('../errors/notfound-error');
+const NotFoundError = require('../errors/not-found-error');
 const ForbiddenError = require('../errors/forbidden-error');
+const {
+  VALIDATION_ERROR,
+  NOT_FOUND_MOVIE,
+  NOT_ENOUGH_RIGHTS,
+} = require('../utils/constants');
 
 module.exports.getMovies = (req, res, next) => {
   Movie.find({})
@@ -39,28 +44,32 @@ module.exports.createMovie = (req, res, next) => {
     nameRU,
     nameEN,
   })
-    .then((movie) => res.send({ movie }))
+    .then((movie) => res.status(200).send(movie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new RequestError('Ошибка. Повторите запрос'));
+        next(new RequestError(VALIDATION_ERROR));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
 module.exports.deleteMovie = (req, res, next) => {
   Movie.findById(req.params.movieId)
-    .orFail(new NotFoundError('Не найден фильм с данным id'))
+    .orFail(new NotFoundError(NOT_FOUND_MOVIE))
     .then((movie) => {
       if (movie.owner.toString() !== req.user._id) {
-        throw new ForbiddenError('У Вас недостаточно прав');
+        throw new ForbiddenError(NOT_ENOUGH_RIGHTS);
       }
-      movie.remove().then(() => res.send({ message: 'Фильм удален' }));
+      movie.remove()
+        .then(() => res.status(200).send({ message: 'Фильм удален' }))
+        .catch(next);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new RequestError('Ошибка. Повторите запрос'));
+        next(new RequestError(VALIDATION_ERROR));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };

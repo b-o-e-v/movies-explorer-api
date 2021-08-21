@@ -1,51 +1,46 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 const bcrypt = require('bcryptjs');
-const isEmail = require('validator/lib/isEmail');
-const AuthError = require('../errors/auth-error');
+const { REQUIRED, WRONG_EMAIL_OR_PASSWORD, NOT_VALID_EMAIL } = require('../utils/constants');
 
 const userSchema = new mongoose.Schema({
-  // имя пользователя
   name: {
     type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
-    default: 'Имя',
+    required: [true, REQUIRED],
+    minlength: [2, 'Минимальная длина 2 символа'],
+    maxlength: [30, 'Максимальная длина 30 символов'],
   },
-  // почта пользователя, по которой он регистрируется
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    validate: {
-      validator: (v) => isEmail(v),
-      message: 'Неправильный формат почты',
-    },
-  },
-  // хеш пароля
   password: {
     type: String,
-    required: true,
+    required: [true, REQUIRED],
     select: false,
+  },
+  email: {
+    type: String,
+    required: [true, REQUIRED],
+    unique: true,
+    validate: {
+      validator(v) {
+        return validator.isEmail(v);
+      },
+      message: NOT_VALID_EMAIL,
+    },
   },
 });
 
-userSchema.statics.findUserByCredentials = function findAndCheck(
-  email,
-  password,
-) {
-  return this.findOne({ email })
-    .select('+password')
+userSchema.statics.findUserByCredentials = function findUser(email, password) {
+  return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        throw new AuthError('Неправильные почта или пароль');
+        return Promise.reject(new Error(WRONG_EMAIL_OR_PASSWORD));
       }
-      return bcrypt.compare(password, user.password).then((matched) => {
-        if (!matched) {
-          throw new AuthError('Неправильные почта или пароль');
-        }
-        return user;
-      });
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            return Promise.reject(new Error(WRONG_EMAIL_OR_PASSWORD));
+          }
+          return user;
+        });
     });
 };
 
