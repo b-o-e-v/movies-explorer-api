@@ -7,5 +7,5 @@
 * MongoDB
 * Mongoose
 
-Публичный IPv4: 178.154.246.122
+Публичный IPv4: 84.201.158.186
 Cсылка: [BACKEND / movies-explorer-api](https://api.bitfilms.boev.nomoredomains.monster)
