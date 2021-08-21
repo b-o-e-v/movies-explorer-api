@@ -8,4 +8,4 @@
 * Mongoose
 
 Публичный IPv4: 178.154.246.122
-Cсылка: [BACKEND / movies-explorer-api](https://api.mesto.boev.nomoredomains.club)
+Cсылка: [BACKEND / movies-explorer-api](https://api.bitfilms.boev.nomoredomains.monster)
